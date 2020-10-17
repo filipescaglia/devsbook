@@ -4,9 +4,39 @@ use \core\Model;
 
 class User extends Model {
 
-    private $id;
+    private $avatar;
+    private $birthdate;
     private $email;
+    private $id;
     private $name;
+
+    public function getAvatar() {
+        return $this->avatar;
+    }
+
+    public function getBirthdate() {
+        return $this->birthdate;
+    }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getEmail() {
+        return $this->email;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function setAvatar($avatar) {
+        $this->avatar = $avatar;
+    }
+
+    public function setBirthdate($birthdate) {
+        $this->birthdate = $birthdate;
+    }
 
     public function setId($id) {
         $this->id = $id;
