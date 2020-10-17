@@ -2,6 +2,8 @@
 namespace src\handlers;
 
 use \src\models\Post;
+use \src\models\User;
+use \src\models\UserRelation;
 
 class PostHandler {
 
@@ -16,6 +18,60 @@ class PostHandler {
                 'body' => $body
             ])->execute();
         }
+    }
+
+    public static function getHomeFeed($idUser, $page) {
+        $perPage = 2;
+
+        $userList = UserRelation::select()->where('user_from', $idUser)->get();
+        $users = [];
+        foreach($userList as $u) {
+            $users[] = $u['user_to'];
+        }
+        $users[] = $idUser;
+
+        $postList = Post::select()
+            ->where('id_user', 'in', $users)
+            ->orderBy('created_at', 'desc')
+            ->page($page, $perPage)
+        ->get();
+
+        $total = Post::select()
+            ->where('id_user', 'in', $users)
+        ->count();
+        $pageCount = ceil($total / $perPage);
+        
+        $posts = [];
+        foreach($postList as $p) {
+            $newPost = new Post();
+            $newPost->setId($p['id']);
+            $newPost->setType($p['type']);
+            $newPost->setCreatedAt($p['created_at']);
+            $newPost->setBody($p['body']);
+            $newPost->mine = false;
+
+            if($p['id_user'] == $idUser)
+                $newPost->mine = true;
+
+            $newUser = User::select()->where('id', $p['id_user'])->one();
+            $newPost->user = new User();
+            $newPost->user->setId($newUser['id']);
+            $newPost->user->setName($newUser['name']);
+            $newPost->user->setAvatar($newUser['avatar']);
+
+            $newPost->likeCount = 0;
+            $newPost->liked = false;
+
+            $newPost->comments = [];
+
+            $posts[] = $newPost;
+        }
+
+        return [
+            'currentPage' => $page,
+            'pageCount' => $pageCount,
+            'posts' => $posts
+        ];
     }
 
 }
