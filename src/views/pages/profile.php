@@ -18,6 +18,13 @@
                             <div class="profile-info-location"><?=$user->getCity();?></div>
                         </div>
                         <div class="profile-info-data row">
+                            <?php if($user->getId() != $loggedUser->getId()): ?>
+                                <div class="profile-info-item m-width-20">
+                                    <a class="button" href="<?=$base;?>/profile/<?=$user->getId();?>/follow">
+                                        <?= ($isFollowing) ? 'Deixar de Seguir' : 'Seguir +' ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
                             <div class="profile-info-item m-width-20">
                                 <div class="profile-info-item-n"><?=count($user->getFollowers());?></div>
                                 <div class="profile-info-item-s">Seguidores</div>
@@ -78,14 +85,14 @@
                     <div class="box-body friend-list">
 
                         <?php for($i = 0; $i < 9; $i++): ?>
-                            <?php if(!empty($user->getFollowing($i))): ?>
+                            <?php if(!empty($user->getFollowing()[$i])): ?>
                                 <div class="friend-icon">
-                                    <a href="<?=$base;?>/perfil/<?=$user->getFollowing($i)->getId();?>">
+                                    <a href="<?=$base;?>/perfil/<?=$user->getFollowing()[$i]->getId();?>">
                                         <div class="friend-icon-avatar">
-                                            <img src="<?=$base;?>/media/avatars/<?=$user->getFollowing($i)->getAvatar();?>" />
+                                            <img src="<?=$base;?>/media/avatars/<?=$user->getFollowing()[$i]->getAvatar();?>" />
                                         </div>
                                         <div class="friend-icon-name">
-                                            <?=$user->getFollowing($i)->getName();?>
+                                            <?=$user->getFollowing()[$i]->getName();?>
                                         </div>
                                     </a>
                                 </div>

@@ -3,7 +3,7 @@ namespace src\handlers;
 
 use \src\models\Post;
 use \src\models\User;
-use \src\models\UserRelation;
+use \src\models\User_Relation;
 
 class PostHandler {
 
@@ -53,7 +53,7 @@ class PostHandler {
     public static function getHomeFeed($idUser, $page) {
         $perPage = 2;
 
-        $userList = UserRelation::select()->where('user_from', $idUser)->get();
+        $userList = User_Relation::select()->where('user_from', $idUser)->get();
         $users = [];
         foreach($userList as $u) {
             $users[] = $u['user_to'];

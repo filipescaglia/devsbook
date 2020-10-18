@@ -4,6 +4,7 @@ namespace src\controllers;
 use \core\Controller;
 use \src\handlers\UserHandler;
 use \src\handlers\PostHandler;
+use src\models\User_Relation;
 
 class ProfileController extends Controller {
 
@@ -24,7 +25,6 @@ class ProfileController extends Controller {
         }
 
         $user = UserHandler::getUser($id, true);
-
         if(!$user) {
             $this->redirect('/');
         }
@@ -39,11 +39,34 @@ class ProfileController extends Controller {
             $this->loggedUser->getId()
         );
 
+        $isFollowing = false;
+        if($user->getId() != $this->loggedUser->getId()) {
+            $isFollowing = UserHandler::isFollowing(
+                $this->loggedUser->getId(),
+                $user->getId()
+            );
+        }
+
         $this->render('profile', [
             'feed' => $feed,
+            'isFollowing' => $isFollowing,
             'loggedUser' => $this->loggedUser,
             'user' => $user
         ]);
+    }
+
+    public function follow($attr) {
+        $to = intval($attr['id']);
+
+        if(UserHandler::idExists($to)) {
+            if(UserHandler::isFollowing($this->loggedUser->getId(), $to)) {
+                UserHandler::unfollow($this->loggedUser->getId(), $to);
+            } else {
+                UserHandler::follow($this->loggedUser->getId(), $to);
+            }
+        }
+
+        $this->redirect("/profile/$to");
     }
 
 }
