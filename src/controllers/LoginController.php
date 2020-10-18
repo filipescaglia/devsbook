@@ -5,6 +5,11 @@ use \core\Controller;
 use \src\handlers\UserHandler;
 
 class LoginController extends Controller {
+
+    public function logout() {
+        $_SESSION['token'] = '';
+        $this->redirect('/login');
+    }
     
     public function signin() {
         $flash = '';
