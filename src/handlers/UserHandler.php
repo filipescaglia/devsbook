@@ -129,6 +129,26 @@ class UserHandler {
         return false;
     }
 
+    public static function searchUser($term) {
+        $data = User::select()
+            ->where('name', 'like', "%$term%")
+        ->get();
+        $users = [];
+
+        if($data) {
+            foreach($data as $d) {
+                $newUser = new User();
+                $newUser->setId($d['id']);
+                $newUser->setName($d['name']);
+                $newUser->setAvatar($d['avatar']);
+
+                $users[] = $newUser;
+            }
+        }
+
+        return $users;
+    }
+
     public static function unfollow($from, $to) {
         User_Relation::delete()
             ->where('user_from', $from)
