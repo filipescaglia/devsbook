@@ -46,9 +46,13 @@ class UserHandler {
         return false;
     }
 
-    public static function emailExists($email) {
+    public static function emailExists($email, $returnUser = false) {        
         $user = User::select()->where('email', $email)->one();
-        return $user ? true : false;
+        if($returnUser === true) {
+            return $user ? $user : false;
+        } else {
+            return $user ? true : false;
+        }
     }
 
     public static function getUser($id, $full = false) {
@@ -153,6 +157,48 @@ class UserHandler {
         User_Relation::delete()
             ->where('user_from', $from)
             ->where('user_to', $to)
+        ->execute();
+    }
+
+    public static function updateBirthdate($date, $userId) {
+        User::update()
+            ->set('birthdate', $date)
+            ->where('id', $userId)
+        ->execute();
+    }
+
+    public static function updateCity($city, $userId) {
+        User::update()
+            ->set('city', $city)
+            ->where('id', $userId)
+        ->execute();
+    }
+
+    public static function updateEmail($email, $userId) {
+        User::update()
+            ->set('email', $email)
+            ->where('id', $userId)
+        ->execute();
+    }
+
+    public static function updateName($name, $userId) {
+        User::update()
+            ->set('name', $name)
+            ->where('id', $userId)
+        ->execute();
+    }
+
+    public static function updatePassword($password, $userId) {
+        User::update()
+            ->set('password', $password)
+            ->where('id', $userId)
+        ->execute();
+    }
+
+    public static function updateWork($work, $userId) {
+        User::update()
+            ->set('work', $work)
+            ->where('id', $userId)
         ->execute();
     }
 
