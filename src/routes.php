@@ -28,6 +28,8 @@ $router->get('/search', 'SearchController@index');
 $router->get('/config', 'ConfigController@index');
 $router->post('/config', 'ConfigController@update');
 
+$router->get('/ajax/like/{id}', 'AjaxController@like');
+
 $router->get('/logout', 'LoginController@logout');
 
 
