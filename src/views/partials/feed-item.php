@@ -2,10 +2,14 @@
     <div class="box-body">
         <div class="feed-item-head row mt-20 m-width-20">
             <div class="feed-item-head-photo">
-                <a href=""><img src="<?=$base;?>/media/avatars/<?=$data->user->getAvatar();?>" /></a>
+                <a href="<?=$base?>/profile/<?=$data->user->getId();?>">
+                    <img src="<?=$base;?>/media/avatars/<?=$data->user->getAvatar();?>" />
+                </a>
             </div>
             <div class="feed-item-head-info">
-                <a href=""><span class="fidi-name"><?=$data->user->getName();?></span></a>
+                <a href="<?=$base?>/profile/<?=$data->user->getId();?>">
+                    <span class="fidi-name"><?=$data->user->getName();?></span>
+                </a>
                 <span class="fidi-action">
                     <?php
                     switch($data->getType()) {
@@ -35,19 +39,29 @@
         </div>
         <div class="feed-item-comments">
             
-            <!-- <div class="fic-item row m-height-10 m-width-20">
-                <div class="fic-item-photo">
-                    <a href=""><img src="media/avatars/avatar.jpg" /></a>
-                </div>
-                <div class="fic-item-info">
-                    <a href="">Bonieky Lacerda</a>
-                    Comentando no meu próprio post
-                </div>
-            </div> -->
+            <div class="feed-item-comments-area">
+                <?php foreach($data->comments as $c): ?>                
+                    <div class="fic-item row m-height-10 m-width-20">
+                        <div class="fic-item-photo">
+                            <a href="<?=$base?>/profile/<?=$c['user']['id'];?>">
+                                <img src="<?=$base?>/media/avatars/<?=$c['user']['avatar'];?>" />
+                            </a>
+                        </div>
+                        <div class="fic-item-info">
+                            <a href="<?=$base?>/profile/<?=$c['user']['id'];?>">
+                                <?=$c['user']['name'];?>
+                            </a>
+                            <?=$c['body'];?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
 
             <div class="fic-answer row m-height-10 m-width-20">
                 <div class="fic-item-photo">
-                    <a href=""><img src="<?=$base;?>/media/avatars/<?=$loggedUser->getAvatar();?>" /></a>
+                    <a href="<?=$base?>/profile/<?=$loggedUser->getId();?>">
+                        <img src="<?=$base;?>/media/avatars/<?=$loggedUser->getAvatar();?>" />
+                    </a>
                 </div>
                 <input type="text" class="fic-item-field" placeholder="Escreva um comentário" />
             </div>

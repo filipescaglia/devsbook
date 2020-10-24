@@ -2,11 +2,21 @@
 namespace src\handlers;
 
 use \src\models\Post;
+use \src\models\Post_Comment;
 use \src\models\Post_Like;
 use \src\models\User;
 use \src\models\User_Relation;
 
 class PostHandler {
+
+    public static function addComment($id, $txt, $loggedUserId) {
+        Post_Comment::insert([
+            'id_post' => $id,
+            'id_user' => $loggedUserId,
+            'created_at' => date('Y-m-d H:i:s'),
+            'body' => $txt
+        ])->execute();
+    }
 
     public static function addPost($idUser, $type, $body) {
         $body = trim($body);
@@ -60,7 +70,10 @@ class PostHandler {
             $newPost->likeCount = count($likes);
             $newPost->liked = self::isLiked($p['id'], $loggedUserId);
 
-            $newPost->comments = [];
+            $newPost->comments = Post_Comment::select()->where('id_post', $p['id'])->get();
+            foreach($newPost->comments as $key => $c) {
+                $newPost->comments[$key]['user'] = User::select()->where('id', $c['id_user'])->one();
+            }
 
             $posts[] = $newPost;
         }
