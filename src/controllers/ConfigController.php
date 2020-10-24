@@ -15,6 +15,8 @@ class ConfigController extends Controller {
     }
 
     public function index() {
+        $user = UserHandler::getUser($this->loggedUser->getId());
+
         $flash = '';
         if(!empty($_SESSION['flash'])) {
             $flash = $_SESSION['flash'];
@@ -23,7 +25,50 @@ class ConfigController extends Controller {
         $this->render('config', [
             'flash' => $flash,
             'loggedUser' => $this->loggedUser,
+            'user' => $user
         ]);
+    }
+
+    private function cutImage($file, $width, $height, $folder) {
+        list($widthOrig, $heightOrig) = getimagesize($file['tmp_name']);
+        $ratio = $widthOrig / $heightOrig;
+
+        $newWidth = $width;
+        $newHeight = $newWidth / $ratio;
+
+        if($newHeight < $height) {
+            $newHeight = $height;
+            $newWidth = $newHeight * $ratio;
+        }
+
+        $x = $width - $newWidth;
+        $y = $height - $newHeight;
+        $x = $x < 0 ? $x / 2 : $x;
+        $y = $y < 0 ? $y / 2 : $y;
+
+        $finalImage = imagecreatetruecolor($width, $height);
+        switch($file['type']) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = imagecreatefromjpeg($file['tmp_name']);
+            break;
+
+            case 'image/png':
+                $image = imagecreatefrompng($file['tmp_name']);
+            break;
+        }
+
+        imagecopyresampled(
+            $finalImage, $image,
+            $x, $y, 0, 0,
+            $newWidth, $newHeight, $widthOrig, $heightOrig
+        );
+
+        $fileName = md5(time().rand(0, 9999)) . 'jpg';
+
+        imagejpeg($finalImage, $folder . '/' . $fileName);
+
+        return $fileName;
     }
 
     public function update() {
@@ -36,6 +81,26 @@ class ConfigController extends Controller {
         $newPassword = filter_input(INPUT_POST, 'password');
         $newPasswordConf = filter_input(INPUT_POST, 'password-conf');
         $work = filter_input(INPUT_POST, 'work', FILTER_SANITIZE_SPECIAL_CHARS);
+
+        $updateFields = [];
+
+        if(isset($_FILES['avatar']) && !empty($_FILES['avatar']['tmp_name'])) {
+            $newAvatar = $_FILES['avatar'];
+
+            if(in_array($newAvatar['type'], ['image/jpeg', 'image/jpg', 'image/png'])) {
+                $avatarName = $this->cutImage($newAvatar, 200, 200, 'media/avatars');
+                $updateFields['avatar'] = $avatarName;
+            }
+        }
+
+        if(isset($_FILES['cover']) && !empty($_FILES['cover']['tmp_name'])) {
+            $newCover = $_FILES['cover'];
+
+            if(in_array($newCover['type'], ['image/jpeg', 'image/jpg', 'image/png'])) {
+                $coverName = $this->cutImage($newCover, 850, 310, 'media/covers');
+                $updateFields['cover'] = $coverName;
+            }
+        }
 
         if(!empty($birthdate)) {
             $birthdate = explode('/', $birthdate);
@@ -50,7 +115,7 @@ class ConfigController extends Controller {
                 $this->redirect('/config');
             }
 
-            UserHandler::updateBirthdate($birthdate, $userId);
+            $updateFields['birthdate'] = $birthdate;
         }
 
         if(!empty($email)) {
@@ -69,7 +134,7 @@ class ConfigController extends Controller {
                 }
             }
 
-            UserHandler::updateEmail($email, $userId);
+            $updateFields['email'] = $email;
         }
 
         if(!empty($newPassword) && !empty($newPasswordConf)) {
@@ -78,21 +143,22 @@ class ConfigController extends Controller {
                 $this->redirect('/config');
             }
 
-            $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-            UserHandler::updatePassword($hash, $userId);
+            $updateFields['password'] = $newPassword;
         }
 
         if(!empty($city)) {
-            UserHandler::updateCity($city, $userId);
+            $updateFields['city'] = $city;
         }
 
         if(!empty($name)) {
-            UserHandler::updateName($name, $userId);
+            $updateFields['name'] = $name;
         }
 
         if(!empty($work)) {
-            UserHandler::updateWork($work, $userId);
+            $updateFields['work'] = $work;
         }
+
+        UserHandler::updateUser($updateFields, $this->loggedUser->getId());
 
         $this->redirect('/config');
 

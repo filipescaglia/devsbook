@@ -160,46 +160,22 @@ class UserHandler {
         ->execute();
     }
 
-    public static function updateBirthdate($date, $userId) {
-        User::update()
-            ->set('birthdate', $date)
-            ->where('id', $userId)
-        ->execute();
-    }
+    public static function updateUser($fields, $userId) {
+        if(count($fields) > 0) {
 
-    public static function updateCity($city, $userId) {
-        User::update()
-            ->set('city', $city)
-            ->where('id', $userId)
-        ->execute();
-    }
+            $update = User::update();
 
-    public static function updateEmail($email, $userId) {
-        User::update()
-            ->set('email', $email)
-            ->where('id', $userId)
-        ->execute();
-    }
+            foreach($fields as $f => $fValue) {
+                if($f == 'password') {
+                    $fValue = password_hash($fValue, PASSWORD_DEFAULT);
+                }
 
-    public static function updateName($name, $userId) {
-        User::update()
-            ->set('name', $name)
-            ->where('id', $userId)
-        ->execute();
-    }
+                $update->set($f, $fValue);
+            }
 
-    public static function updatePassword($password, $userId) {
-        User::update()
-            ->set('password', $password)
-            ->where('id', $userId)
-        ->execute();
-    }
+            $update->where('id', $userId)->execute();
 
-    public static function updateWork($work, $userId) {
-        User::update()
-            ->set('work', $work)
-            ->where('id', $userId)
-        ->execute();
+        }
     }
 
     public static function verifyLogin($email, $password) {

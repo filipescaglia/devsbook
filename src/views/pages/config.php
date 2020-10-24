@@ -16,16 +16,19 @@
 
                 <br/><br/>
 
-                <form method="POST" action="<?=$base;?>/config">
+                <form class="config-form" enctype="multipart/form-data" method="POST" action="<?=$base;?>/config">
                     <label for="avatar">Novo Avatar:</label>
                     <br/>
                     <input type="file" name="avatar" id="avatar" />
+                    <br/>
+                    <img class="image-edit" src="<?=$base;?>/media/avatars/<?=$user->getAvatar();?>" />
 
                     <br/><br/>
 
                     <label for="cover">Nova Capa:</label>
                     <br/>
                     <input type="file" name="cover" id="cover" />
+                    <img class="image-edit" src="<?=$base;?>/media/covers/<?=$user->getCover();?>" />
 
                     <br/><br/>
 
