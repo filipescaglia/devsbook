@@ -6,6 +6,10 @@
             </div>
             <div class="feed-new-input-placeholder">O que você está pensando, <?=$user->getName();?>?</div>
             <div class="feed-new-input" contenteditable="true"></div>
+            <div class="feed-new-photo">
+                <img src="<?=$base;?>/assets/images/photo.png" />
+                <input type="file" name="photo" class="feed-new-file" accept="image/png, image/jpg, image/jpeg" />
+            </div>
             <div class="feed-new-send">
                 <img src="<?=$base;?>/assets/images/send.png" />
             </div>
@@ -22,6 +26,31 @@
     const feedInput = document.querySelector('.feed-new-input');
     const feedSubmit = document.querySelector('.feed-new-send');
     const feedForm = document.querySelector('.feed-new-form');
+    const feedPhoto = document.querySelector('.feed-new-photo');
+    const feedFile = document.querySelector('.feed-new-file');
+
+    feedPhoto.addEventListener('click', () => {
+        feedFile.click();
+    });
+
+    feedFile.addEventListener('change', async () => {
+        const photo = feedFile.files[0];
+
+        const formData = new FormData();
+        formData.append('photo', photo);
+
+        const req = await fetch(`${BASE}/ajax/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const json = await req.json();
+
+        if(json.error != '') {
+            alert(json.error);
+        }
+
+        window.location.href = window.location.href;
+    });
 
     feedSubmit.addEventListener('click', function(obj) {
         const value = feedInput.innerText.trim();

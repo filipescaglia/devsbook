@@ -2,3 +2,4 @@ composer.phar
 /vendor/
 .DS_Store
 _MODELO
+/public/media/uploads/*
