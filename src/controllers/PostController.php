@@ -15,6 +15,19 @@ class PostController extends Controller {
             $this->redirect('/login');
     }
 
+    public function delete($attr = []) {
+        if(!empty($attr['id'])) {
+            $idPost = $attr['id'];
+
+            PostHandler::delete(
+                $idPost,
+                $this->loggedUser->getId()
+            );
+        }
+
+        $this->redirect('/');
+    }
+
     public function new() {
         $body = filter_input(INPUT_POST, 'body', FILTER_SANITIZE_SPECIAL_CHARS);
 

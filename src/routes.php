@@ -12,6 +12,7 @@ $router->get('/register', 'LoginController@signup');
 $router->post('/register', 'LoginController@signupAction');
 
 $router->post('/post/new', 'PostController@new');
+$router->get('/post/{id}/delete', 'PostController@delete');
 
 $router->get('/profile/{id}/photos', 'ProfileController@photos');
 $router->get('/profile/{id}/friends', 'ProfileController@friends');

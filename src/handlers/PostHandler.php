@@ -39,6 +39,30 @@ class PostHandler {
         ])->execute();
     }
 
+    public static function delete($idPost, $loggedUserId) {
+        $post = Post::select()
+            ->where('id', $idPost)
+            ->where('id_user', $loggedUserId)
+        ->get();
+
+        if(count($post) > 0) {
+            $post = $post[0];
+
+            Post_Like::delete()->where('id_post', $idPost)->execute();
+            Post_Comment::delete()->where('id_post', $idPost)->execute();
+
+            if($post['type'] === 'photo') {
+
+                $img = __DIR__ . '/../../public/media/uploads/' . $post['body'];
+                if(file_exists($img)) {
+                    unlink($img);
+                }
+            }
+
+            Post::delete()->where('id', $idPost)->execute();
+        }
+    }
+
     public static function deleteLike($id, $loggedUserId) {
         Post_Like::delete()
             ->where('id_post', $id)
